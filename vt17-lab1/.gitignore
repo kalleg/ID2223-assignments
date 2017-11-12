@@ -3,6 +3,7 @@
 .classpath
 .project
 .settings/
-project/
+project/target/
+project/project/
 target/
 spark.log

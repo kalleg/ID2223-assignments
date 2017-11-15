@@ -18,15 +18,15 @@ case class Instance(label: Double, features: Vector)
 
 object Helper {
   def rmse(labelsAndPreds: RDD[(Double, Double)]): Double = {
-    ???
+    return Math.sqrt(labelsAndPreds.map(lp => Math.pow(lp._1-lp._2, 2)).reduce((a, b) => a + b)/labelsAndPreds.count())
   }
 
   def predictOne(weights: Vector, features: Vector): Double = {
-    ???
+    return VectorHelper.dot(features, weights)
   }
 
   def predict(weights: Vector, data: RDD[Instance]): RDD[(Double, Double)] = {
-    ???
+    return data.map(i => (i.label, predictOne(weights, i.features)))
   }
 }
 
@@ -38,11 +38,11 @@ class MyLinearRegressionImpl(override val uid: String)
   override def copy(extra: ParamMap): MyLinearRegressionImpl = defaultCopy(extra)
 
   def gradientSummand(weights: Vector, lp: Instance): Vector = {
-    ???
+    return VectorHelper.dot(lp.features, VectorHelper.dot(weights, lp.features) - lp.label)
   }
 
   def gradient(d: RDD[Instance], weights: Vector): Vector = {
-    ???
+    return d.map(i => gradientSummand(weights, i)).reduce((a, b) => VectorHelper.sum(a, b))
   }
 
   def linregGradientDescent(trainData: RDD[Instance], numIters: Int): (Vector, Array[Double]) = {

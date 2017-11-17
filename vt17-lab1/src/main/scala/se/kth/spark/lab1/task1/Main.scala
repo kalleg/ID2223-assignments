@@ -12,7 +12,9 @@ import org.apache.spark.sql.types.StructType
 import org.apache.spark.sql.types.StructField
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.RowFactory
+import org.apache.spark.sql.types.DoubleType
 
+case class Song(val year: Double, val f1: Double, val f2: Double, val f3: Double)
 object Main {
   def main(args: Array[String]) {
     val conf = new SparkConf().setAppName("lab1").setMaster("local")
@@ -34,12 +36,13 @@ object Main {
     //recordsRdd.take(5).foreach(line => {line.foreach(println)})
     
     //Step3: map each row into a Song object by using the year label and the first three features  
-    val songsRdd = recordsRdd.map(row => (row(0).toDouble, row(1).toDouble, row(2).toDouble, row(3).toDouble))
-    //songsRdd.take(5).foreach(println)
+    //val songsRdd = recordsRdd.map(row => (row(0).toDouble, row(1).toDouble, row(2).toDouble, row(3).toDouble))
+    val songsRdd = recordsRdd.map(row => Song(row(0).toDouble, row(1).toDouble, row(2).toDouble, row(3).toDouble))
+    songsRdd.take(5).foreach(println)
 
     //Step4: convert your rdd into a datafram
-    val songsDf = songsRdd.toDF("year", "feature1", "feature2", "feature3")
-    //songsDf.printSchema()
+    val songsDf = songsRdd.toDF()
+    songsDf.printSchema()
 
     // Task 1.1
     val count = songsDf.map(song => 1).reduce((a, b) => a+b)
